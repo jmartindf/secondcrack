@@ -94,6 +94,8 @@ class Post
                 $fields[1] = trim($fields[1]);
                 if ($fname == 'tags') {
                     $this->tags = self::parse_tag_str($fields[1]);
+                } else if ($fname == 'categories') {
+                    $this->categories = self::parse_category_str($fields[1]);
                 } else if ($fname == 'type') {
                     $this->type = str_replace('|', ' ', $fields[1]);
                 } else if ($fname == 'published') {
@@ -172,11 +174,14 @@ class Post
     public function array_for_template()
     {
         $tags = array();
+        foreach ($this->categories as $category) { $categories[$category] = array('post-category' => $category); }
         foreach ($this->tags as $tag) { $tags[$tag] = array('post-tag' => $tag); }
         
         // Convert relative image references to absolute so index pages work
-        $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
-        
+        // $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
+        $first = reset($categories);
+        foreach($categories as $category) { $base_uri .= "/" . $category['post-category']; }
+
         return array_merge(
             $this->headers,
             array(
@@ -186,6 +191,7 @@ class Post
                 'post-rss-date' => date('D, d M Y H:i:s T', $this->timestamp),
                 'post-body' => SmartyPants(Markdown($this->body)),
                 'post-tags' => $tags,
+                'post-categories' => $categories,
                 'post-type' => $this->type,
                 'post-permalink' => $base_uri . '/' . $this->slug,
                 'post-permalink-or-link' => isset($this->headers['link']) && $this->headers['link'] ? $this->headers['link'] : $base_uri . '/' . $this->slug,
@@ -322,5 +328,16 @@ class Post
         $tags = array_unique(array_filter($tags, 'strlen'));
         sort($tags);
         return $tags;
+    }
+
+    public static function parse_category_str($category_str)
+    {
+        // Categories are comma-separated, and any spaces between multiple words in a category will be converted to underscores for URLs
+        if (! strlen($category_str)) return array();
+        $categories = array_map('trim', explode(',', strtolower($category_str)));
+        $categories = str_replace(' ', '_', $categories);
+        $categories = array_unique(array_filter($categories, 'strlen'));
+        sort($categories);
+        return $categories;
     }
 }
