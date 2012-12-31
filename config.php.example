@@ -20,6 +20,11 @@ Post::$blog_title = 'My Blog';
 Post::$blog_url   = 'http://www.mydomain.com/';
 Post::$blog_description = 'I\'m a blogger.';
 
+// Generation options
+Post::$category_permalinks = false;
+Post::$pages_in_folders = false;
+Post::$default_category = "whatever";
+
 // Meta Weblog API params
 Updater::$api_blog_id = 1; // leave this, probably
 Updater::$api_blog_username = 'make up a username';

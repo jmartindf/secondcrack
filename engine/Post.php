@@ -12,6 +12,9 @@ class Post
     public static $blog_title = 'Untitled Blog';
     public static $blog_url   = 'http://no-idea.com/';
     public static $blog_description = 'About my blog.';
+    public static $pages_in_folders = false;
+    public static $category_permalinks = false;
+    public static $default_category = "uncategorized";
     
     public $source_filename = '';
     public $title = '';
@@ -174,15 +177,23 @@ class Post
     public function array_for_template()
     {
         $tags = array();
+
         foreach ($this->categories as $category) { $categories[$category] = array('post-category' => $category); }
         foreach ($this->tags as $tag) { $tags[$tag] = array('post-tag' => $tag); }
-        
-        // Convert relative image references to absolute so index pages work
-        // $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
-        $first = reset($categories);
-        $base_uri = "";
-        foreach($categories as $category) { $base_uri .= "/" . $category['post-category']; }
-        if(!defined($base_uri)) $base_uri = "/whatever";
+
+        if(!Post::$category_permalinks) {        
+            // Convert relative image references to absolute so index pages work
+            $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
+        } else {
+            $first = reset($categories);
+            $base_uri = "";
+            foreach($categories as $category) {
+                $base_uri .= "/" . $category['post-category'];
+            }
+            if($base_uri=="") {
+                $base_uri = Post::$default_category;
+            }
+        }
 
         return array_merge(
             $this->headers,
@@ -223,7 +234,7 @@ class Post
 
         $dest_path = Updater::$dest_path;
 
-        if(true) {
+        if(Post::$pages_in_folders) {
           $dest_path .= '/' . substr(dirname($this->source_filename),strlen(Updater::$source_path)+7); // strip out initial "/pages" + 1 for 0 based counting
           // error_log("Destination path is: ".$dest_path);
         }
