@@ -35,7 +35,7 @@ class Updater
     
     public static $permalink_template = 'post.php';
     public static $tag_page_template  = 'main.php';
-    public static $type_page_template = 'page.php';
+    public static $type_page_template = 'main.php';
     public static $page_template      = 'page.php';
     
     public static $api_blog_id = 1;
