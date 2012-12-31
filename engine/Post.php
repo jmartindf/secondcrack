@@ -221,8 +221,14 @@ class Post
         );
         $output_html = $t->outputHTML();
 
-        if (! file_exists(Updater::$dest_path)) mkdir_as_parent_owner(Updater::$dest_path, 0755, true);
-        file_put_contents_as_dir_owner(Updater::$dest_path . '/' . $this->slug, $output_html);
+        $dest_path = Updater::$dest_path;
+
+        if(true) {
+          $dest_path .= '/' . substr(dirname($this->source_filename),strlen(Updater::$source_path)+7); // strip out initial "/pages" + 1 for 0 based counting
+          // error_log("Destination path is: ".$dest_path);
+        }
+        if (! file_exists($dest_path)) mkdir_as_parent_owner($dest_path, 0755, true);
+        file_put_contents_as_dir_owner($dest_path . '/' . $this->slug, $output_html);
     }
     
     public function write_permalink_page($draft = false)
