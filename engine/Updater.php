@@ -33,10 +33,10 @@ class Updater
     
     public static $tag_page_post_limit = 20;
     
-    public static $permalink_template = 'post.php';
+    public static $permalink_template = 'main.php';
     public static $tag_page_template  = 'main.php';
     public static $type_page_template = 'main.php';
-    public static $page_template      = 'page.php';
+    public static $page_template      = 'main.php';
     
     public static $api_blog_id = 1;
     public static $api_blog_username = '';
