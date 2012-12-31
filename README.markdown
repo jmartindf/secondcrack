@@ -169,6 +169,22 @@ It's pretty awesome.
 
 And if you want to edit your blog on the iPhone or iPad, you can do it with any Dropbox-capable text editor.
 
+# jmartindf’s Modifications
+
+I’m primarily hacking up Second Hack to support my own needs for my own blogs. So far, I’ve made a few useful modifications.
+
+## Finished Changes
+
+* Support for categories (in addition to tags).
+* Permalinks are generated from the categories rather than from the timestamp.
+* Pages can be put into subfolders (nested, even) and the resulting HTML pages will be in corresponding subfolders.
+
+## Planned Changes
+
+* Create category archives
+* Support multiple authors, via an “author” header.
+* Switch to an actual templating language for a greater separation between PHP data structures and the HTML templates
+
 # FAQ
 
 ## Don't a lot of these static-file blogging engines already exist? 
