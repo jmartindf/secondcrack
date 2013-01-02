@@ -17,6 +17,7 @@ class Post
     public static $default_category = "uncategorized";
     public static $authors = array('unk' => 'Unknown Author');
     public static $default_author = 'unk';
+    public static $child_categories = array();
     
     public $source_filename = '';
     public $title = '';
@@ -114,6 +115,8 @@ class Post
                 
                 if (isset($this->headers['link'])) $this->type = 'link';
                 if ($this->author==""||!isset(Post::$authors[$this->author])) $this->author = Post::$default_author;
+                if(!isset($this->categories)) $this->categories = array(Post::$default_category);
+                if(!isset($this->tags)) $this->tags = array();
             }
             array_shift($segments);
         }
@@ -173,8 +176,10 @@ class Post
         if ($this->is_draft) unset($out_headers['published']);
         else $out_headers['published'] = date('Y-m-d h:i:sa', $this->timestamp);
         $source = $this->title . "\n" . str_repeat('=', max(10, min(40, strlen($this->title)))) . "\n";
+        if ($this->author) $out_headers['author'] = $this->author;
         if ($this->type) $out_headers['type'] = $this->type;
         if ($this->tags) $out_headers['tags'] = implode(', ', $this->tags);
+        if ($this->categories) $out_headers['categories'] = implode(', ', $this->categories);
         foreach ($out_headers as $k => $v) $source .= ucfirst($k) . ': ' . $v . "\n";
         $source .= "\n" . $this->body;
         return $source;
@@ -191,14 +196,15 @@ class Post
             // Convert relative image references to absolute so index pages work
             $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
         } else {
-            $first = reset($categories);
-            $base_uri = "";
-            foreach($categories as $category) {
-                $base_uri .= "/" . $category['post-category'];
+            reset($categories);
+            $base_uri = key($categories);
+            if(array_key_exists($base_uri, Post::$child_categories)) {
+                $base_uri = Post::$child_categories[$base_uri]."/".$base_uri;
             }
-            if($base_uri=="") {
-                $base_uri = Post::$default_category;
-            }
+            // if($base_uri=="") {
+            //     $base_uri = Post::$default_category;
+            // }
+            $base_uri = strtolower($base_uri);
         }
 
         return array_merge(
@@ -359,10 +365,10 @@ class Post
 
     public static function parse_category_str($category_str)
     {
-        // Categories are comma-separated, and any spaces between multiple words in a category will be converted to underscores for URLs
+        // Categories are comma-separated, and any spaces between multiple words in a category will be converted to dashes for URLs
         if (! strlen($category_str)) return array();
         $categories = array_map('trim', explode(',', strtolower($category_str)));
-        $categories = str_replace(' ', '_', $categories);
+        $categories = str_replace(' ', '-', $categories);
         $categories = array_unique(array_filter($categories, 'strlen'));
         sort($categories);
         return $categories;
