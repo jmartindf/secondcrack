@@ -198,3 +198,24 @@ function safe_unlink($file)
     try { @unlink($file); } catch (Exception $e) { }
 }
 
+function create_excerpt($content) {
+    // ----- remove HTML TAGs ----- 
+    $content = preg_replace ('/<[^>]*>/', ' ', $content); 
+    
+    // ----- remove control characters ----- 
+    $content = str_replace("\r", '', $content);    // --- replace with empty space
+    $content = str_replace("\n", ' ', $content);   // --- replace with space
+    $content = str_replace("\t", ' ', $content);   // --- replace with space
+    
+    // ----- remove multiple spaces ----- 
+    $content = trim(preg_replace('/ {2,}/', ' ', $content));
+
+    $content = html_entity_decode(strip_tags($content));
+    $words = str_word_count($content,2);
+    if(count($words) > 55) {
+        $ex = array_slice($words,0,53,true);
+        array_push($ex,"[...]");
+        $content = implode(" ",$ex);
+    }
+    return $content;
+}
