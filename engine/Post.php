@@ -180,6 +180,9 @@ class Post
         if ($this->type) $out_headers['type'] = $this->type;
         if ($this->tags) $out_headers['tags'] = implode(', ', $this->tags);
         if ($this->categories) $out_headers['categories'] = implode(', ', $this->categories);
+        if (!array_key_exists("excerpt",$out_headers)) {
+          $out_headers["excerpt"] = create_excerpt($this->body);
+        }
         foreach ($out_headers as $k => $v) $source .= ucfirst($k) . ': ' . $v . "\n";
         $source .= "\n" . $this->body;
         return $source;
