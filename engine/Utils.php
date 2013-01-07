@@ -199,6 +199,8 @@ function safe_unlink($file)
 }
 
 function create_excerpt($content) {
+    $content = SmartyPants(Markdown($content));
+
     // ----- remove HTML TAGs ----- 
     $content = preg_replace ('/<[^>]*>/', ' ', $content); 
     
@@ -211,11 +213,11 @@ function create_excerpt($content) {
     $content = trim(preg_replace('/ {2,}/', ' ', $content));
 
     $content = html_entity_decode(strip_tags($content));
-    $words = str_word_count($content,2);
-    if(count($words) > 55) {
-        $ex = array_slice($words,0,53,true);
-        array_push($ex,"[...]");
-        $content = implode(" ",$ex);
+    $abody = str_word_count($content,2);
+    if(count($abody) >= 55) {
+        $tbody = array_keys($abody);
+        $content = substr($content,0,$tbody[54]);
+        $content = $content." [...]";
     }
     return $content;
 }
