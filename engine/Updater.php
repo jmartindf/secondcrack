@@ -25,6 +25,7 @@ class Updater
     public static $rss_template = 'rss.php';
     public static $rss_tag_filter = '!site-only';
     public static $rss_type_filter = false;
+    public static $rss_excerpts = false;
 
     public static $archive_month_template = 'main.php';
     public static $archive_year_template = 'main.php';
@@ -581,6 +582,19 @@ class Updater
                 Post::from_files(self::most_recent_post_filenames(self::$rss_post_limit, self::$rss_tag_filter, self::$rss_type_filter)),
                 self::$rss_template
             );
+            if(Updater::$rss_excerpts) {
+              error_log("Updating excerpts RSS...");
+              Post::write_index(
+                  self::$dest_path . "/rss-excerpts.xml", 
+                  Post::$blog_title, 
+                  'rss', 
+                  Post::from_files(self::most_recent_post_filenames(self::$rss_post_limit, self::$rss_tag_filter, self::$rss_type_filter)),
+                  self::$rss_template,
+                  false,
+                  0,
+                  Updater::$rss_excerpts
+              );
+          }    
         }
 
         foreach (self::$index_months_to_be_updated as $ym => $x) {
@@ -695,3 +709,4 @@ class Updater
     }
 }
 
+// vim: set softtabstop=4:tabstop=4:shiftwidth=4

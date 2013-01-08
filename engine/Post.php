@@ -292,7 +292,7 @@ class Post
         if ($draft) file_put_contents_as_dir_owner(Updater::$source_path . '/drafts/_previews/' . $this->slug . '.html', $output_html);
     }
     
-    public static function write_index($dest_path, $title, $type, array $posts, $template = 'main.html', $archive_array = false, $seq_count = 0)
+    public static function write_index($dest_path, $title, $type, array $posts, $template = 'main.html', $archive_array = false, $seq_count = 0, $excerpts=false)
     {
         $posts_data = array();
         foreach ($posts as $p) $posts_data[] = $p->array_for_template();
@@ -308,6 +308,7 @@ class Post
             'previous_page_url' => false,
             'next_page_url' => $seq_count > 1 ? substring_after(substring_before($dest_path, '.', true), Updater::$dest_path) . '-2' : false,
             'archives' => $archive_array ? $archive_array : array(),
+            'excerpts' => $excerpts,
         );
         $output_html = $t->outputHTML();
         
