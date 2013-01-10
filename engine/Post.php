@@ -109,6 +109,8 @@ class Post
                     $this->timestamp = strtotime($fields[1]);
                 } else if ($fname == 'author') {
                     $this->author = strtolower($fields[1]);
+                } else if ($fname == 'slug') {
+                    $this->slug = strtolower($fields[1]);
                 } else {
                     $this->headers[$fname] = $fields[1];
                 }
@@ -130,7 +132,7 @@ class Post
             $this->month = intval(substr($filename_datestr, 4, 2));
             $this->day = intval(substr($filename_datestr, 6, 2));
             $this->offset_in_day = intval(substr($filename, 9, 2));
-            $this->slug = ltrim(substr($filename, 11, -(strlen(Updater::$post_extension))), '-');
+            $this->slug = ($this->slug != "") ? $this->slug : ltrim(substr($filename, 11, -(strlen(Updater::$post_extension))), '-');
         } else {
             $this->year = intval(idate('Y', $this->timestamp));
             $this->month = intval(idate('m', $this->timestamp));
