@@ -200,9 +200,9 @@ class Post
             $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
         } else {
             reset($categories);
-            $base_uri = key($categories);
+            $base_uri = "/" . key($categories);
             if(array_key_exists($base_uri, Post::$child_categories)) {
-                $base_uri = Post::$child_categories[$base_uri]."/".$base_uri;
+                $base_uri = "/" . Post::$child_categories[$base_uri] . "/" . $base_uri;
             }
             // if($base_uri=="") {
             //     $base_uri = Post::$default_category;
