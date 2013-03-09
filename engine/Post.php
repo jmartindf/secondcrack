@@ -18,6 +18,8 @@ class Post
     public static $authors = array('unk' => 'Unknown Author');
     public static $default_author = 'unk';
     public static $child_categories = array();
+    public static $track_google = false;
+    public static $track_mint = false;
     
     public $source_filename = '';
     public $title = '';
@@ -28,6 +30,7 @@ class Post
     public $type = '';
     public $headers = array();
     public $tags = array();
+    public $categories = array();
     public $body = '';
     public $author = '';
 
