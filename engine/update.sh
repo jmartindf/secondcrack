@@ -11,11 +11,14 @@ fi
 
 SOURCE_PATH="$1"
 SECONDCRACK_PATH="$2"
+INSTANCE="$3"
 FORCE_CHECK_EVERY_SECONDS=30
 UPDATE_LOG=/tmp/secondcrack-update.log
 
 SCRIPT_LOCK_FILE="${SECONDCRACK_PATH}/engine/secondcrack-updater.pid"
 BASH_LOCK_DIR="${SECONDCRACK_PATH}/engine/secondcrack-updater.sh.lock"
+SH_LOCK_FILE="/var/run/secondcrack/$INSTANCE.pid"
+echo $BASHPID > $SH_LOCK_FILE
 
 if mkdir "$BASH_LOCK_DIR" ; then
     trap "rmdir '$BASH_LOCK_DIR' 2>/dev/null ; exit" INT TERM EXIT
