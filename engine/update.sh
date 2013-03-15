@@ -13,7 +13,8 @@ SOURCE_PATH="$1"
 SECONDCRACK_PATH="$2"
 INSTANCE="$3"
 FORCE_CHECK_EVERY_SECONDS=30
-UPDATE_LOG=/tmp/secondcrack-update.log
+UPDATE_LOG=/tmp/secondcrack-update.$INSTANCE.log
+ERROR_LOG=/tmp/secondcrack-error.$INSTANCE.err
 
 SCRIPT_LOCK_FILE="${SECONDCRACK_PATH}/engine/secondcrack-updater.pid"
 BASH_LOCK_DIR="${SECONDCRACK_PATH}/engine/secondcrack-updater.sh.lock"
@@ -35,10 +36,10 @@ if mkdir "$BASH_LOCK_DIR" ; then
                 echo "`date` -- updating secondcrack, $FORCE_CHECK_EVERY_SECONDS seconds elapsed" >> $UPDATE_LOG
             fi
             
-            php -f "${SECONDCRACK_PATH}/engine/update.php" "$SCRIPT_LOCK_FILE"
+            php -f "${SECONDCRACK_PATH}/engine/update.php" "$SCRIPT_LOCK_FILE" 1>$UPDATE_LOG.php 2>$ERROR_LOG
             while [ $? -eq 2 ] ; do 
                 echo "`date` -- updating secondcrack, last run performed writes" >> $UPDATE_LOG
-                php -f "${SECONDCRACK_PATH}/engine/update.php" "$SCRIPT_LOCK_FILE"
+                php -f "${SECONDCRACK_PATH}/engine/update.php" "$SCRIPT_LOCK_FILE" 1>$UPDATE_LOG.php 2>$ERROR_LOG
             done
         done
     fi
