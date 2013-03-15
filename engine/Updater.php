@@ -2,6 +2,7 @@
 
 require_once(dirname(__FILE__) . '/Post.php');
 require_once(dirname(__FILE__) . '/Hook.php');
+require_once(dirname(__FILE__) . '/SiteHook.php');
 
 class Updater
 {
@@ -374,6 +375,26 @@ class Updater
         }
     }
     
+    public static function site_hooks()
+    {
+        $dir = self::$source_path . '/hooks';
+        if (is_dir($dir)) {
+            if ( ($dh = opendir($dir)) ) {
+                while ( ($file = readdir($dh) ) !== false) {
+                    if ($file[0] == '.') continue;
+                    if (substr($file, 0, 5) == 'site_') {
+                        $fullpath = $dir . '/' . $file;
+                        require_once($fullpath);
+                        $className = ucfirst(substr($file, 5, strlen($file) - 9));
+                        $hook = new $className;
+                        $hook->doHook();
+                    }
+                }
+                closedir($dh);
+            }
+        }
+    }
+    
     public static function post_hooks($post)
     {
         $dir = self::$source_path . '/hooks';
@@ -705,6 +726,9 @@ class Updater
                     self::archive_array('type-' . $type)
                 );
             }
+        }
+        if(self::$index_to_be_updated) {
+          self::site_hooks();
         }
     }
 }
