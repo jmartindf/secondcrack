@@ -19,7 +19,7 @@ ERROR_LOG=/tmp/secondcrack-error.$INSTANCE.err
 SCRIPT_LOCK_FILE="${SECONDCRACK_PATH}/engine/secondcrack-updater.pid"
 BASH_LOCK_DIR="${SECONDCRACK_PATH}/engine/secondcrack-updater.sh.lock"
 SH_LOCK_FILE="/var/run/secondcrack/$INSTANCE.pid"
-echo $BASHPID > $SH_LOCK_FILE
+echo "$$" > $SH_LOCK_FILE
 
 if mkdir "$BASH_LOCK_DIR" ; then
     trap "rmdir '$BASH_LOCK_DIR' 2>/dev/null ; exit" INT TERM EXIT
