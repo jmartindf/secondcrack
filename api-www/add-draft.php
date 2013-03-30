@@ -1,18 +1,41 @@
 <?php
 ob_start();
 require_once(realpath(dirname(__FILE__) . '/..') . '/config.php');
+require_once(realpath(dirname(__FILE__) ) . '/password.php');
 ob_end_clean();
 
-if (! isset($_SERVER['PHP_AUTH_USER']) || 
-    ! isset($_SERVER['PHP_AUTH_PW']) ||
-    $_SERVER['PHP_AUTH_USER'] != Updater::$api_blog_username ||
-    $_SERVER['PHP_AUTH_PW'] != Updater::$api_blog_password
-) {
-    header('WWW-Authenticate: Basic realm="' . Post::$blog_title . '"');
-    header('HTTP/1.0 401 Unauthorized');
-    //sleep(3);
-    exit;
+$auth = false;
+
+if(isset($_COOKIE['username']) &&
+   isset($_COOKIE['password']) &&
+   $_COOKIE['username'] == Updater::$api_blog_username &&
+   password_verify(Updater::$api_blog_password, $_COOKIE['password'])) {
+     $auth = true;
 }
+
+if (!$auth && ( isset($_POST['username']) && 
+    isset($_POST['password']) &&
+    $_POST['username'] == Updater::$api_blog_username &&
+    $_POST['password'] == Updater::$api_blog_password
+  )) {
+    $auth = true;
+    $expire=time()+60*60*24*60;
+    setcookie("username", Updater::$api_blog_username, $expire);
+    setcookie("password", password_hash(Updater::$api_blog_password, PASSWORD_DEFAULT), $expire);
+}
+
+if (!$auth) {
+?>
+<html>
+<head><meta name="viewport" content="width=device-width"><title>Login to Draft Bookmarklet</title></head>
+<h1>Login</h1>
+<form method="post" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>">
+<label for="fUserName">User:</label><input type="text" id="fUserName" name="username" size="20" /><br />
+<label for="fPassword">Password:</label><input type="password" id="fPassword" name="password" size="20" /><br />
+<input type="submit" value="Login" />
+</form>
+<?php
+} else {
 
 $bookmarklet_code = <<<EOF
 var d=document,w=window,e=w.getSelection,k=d.getSelection,x=d.selection,s=(e?e():(k)?k():(x?x.createRange().text:0)),l=d.location,e=encodeURIComponent;w.location.href='TARGETadd-draft.php?u='+e(l.href)+'&t='+e(d.title)+'&s='+e(s)+'&EXTRA';
@@ -87,3 +110,6 @@ if (! chmod($output_filename, 0666)) die('File permission-set failed');
         <a href="<?= h($url) ?>" style="font-size: 11px; color: #aaa;">redirecting back...</a>
     </body>
 </html>
+<?php
+}
+?>
