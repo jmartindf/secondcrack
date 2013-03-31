@@ -180,6 +180,10 @@ I’m primarily hacking up Second Hack to support my own needs for my own blogs.
 * Pages can be put into subfolders (nested, even) and the resulting HTML pages will be in corresponding subfolders.
 * Support multiple authors, via an “author” header.
 
+## Published Timestamps
+
+The stock version of secondcrack will use the last modified date of a draft as the published date for a draft. I tend to write drafts and then publish them, unchanged, whenever the time is right. I created a new configuration flag to help me out. If Post::$draft_publish_now is true and the draft was modified 30 or minutes ago, then secondcrack will publish the post with the current date/time instead of the last modified date/time.
+
 ## Planned Changes
 
 * Create category archives

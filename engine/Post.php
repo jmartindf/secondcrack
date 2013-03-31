@@ -20,6 +20,7 @@ class Post
     public static $child_categories = array();
     public static $track_google = false;
     public static $track_mint = false;
+    public static $draft_publish_now = false;
     
     public $source_filename = '';
     public $title = '';
@@ -72,7 +73,14 @@ class Post
     {
         $this->source_filename = $source_filename;
         $this->is_draft = ($is_draft === -1 ? (false !== strpos($source_filename, 'drafts/') || false !== strpos($source_filename, 'pages/')) : $is_draft);
-        $this->timestamp = filemtime($source_filename);
+        $ts = filemtime($source_filename);
+        $now = time();
+        $diff_in_minutes = ($now-$ts)/60;
+        if(($diff_in_minutes>=30) && Post::$draft_publish_now) {
+          $this->timestamp = time();
+        } else {
+          $this->timestamp = $ts;
+        }
 
         $segments = preg_split( '/\R\R/',  trim(file_get_contents($source_filename)), 2);
         if (! isset($segments[1])) $segments[1] = '';
