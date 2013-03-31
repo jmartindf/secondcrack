@@ -43,6 +43,7 @@ class Updater
     public static $api_blog_id = 1;
     public static $api_blog_username = '';
     public static $api_blog_password = '';
+    public static $dev_site = false;
 
     public static $changes_were_written = false;
     
@@ -377,40 +378,44 @@ class Updater
     
     public static function site_hooks()
     {
-        $dir = self::$source_path . '/hooks';
-        if (is_dir($dir)) {
-            if ( ($dh = opendir($dir)) ) {
-                while ( ($file = readdir($dh) ) !== false) {
-                    if ($file[0] == '.') continue;
-                    if (substr($file, 0, 5) == 'site_') {
-                        $fullpath = $dir . '/' . $file;
-                        require_once($fullpath);
-                        $className = ucfirst(substr($file, 5, strlen($file) - 9));
-                        $hook = new $className;
-                        $hook->doHook();
+        if (!Updater::$dev_site) {
+            $dir = self::$source_path . '/hooks';
+            if (is_dir($dir)) {
+                if ( ($dh = opendir($dir)) ) {
+                    while ( ($file = readdir($dh) ) !== false) {
+                        if ($file[0] == '.') continue;
+                        if (substr($file, 0, 5) == 'site_') {
+                            $fullpath = $dir . '/' . $file;
+                            require_once($fullpath);
+                            $className = ucfirst(substr($file, 5, strlen($file) - 9));
+                            $hook = new $className;
+                            $hook->doHook();
+                        }
                     }
+                    closedir($dh);
                 }
-                closedir($dh);
             }
         }
     }
     
     public static function post_hooks($post)
     {
-        $dir = self::$source_path . '/hooks';
-        if (is_dir($dir)) {
-            if ( ($dh = opendir($dir)) ) {
-                while ( ($file = readdir($dh) ) !== false) {
-                    if ($file[0] == '.') continue;
-                    if (substr($file, 0, 5) == 'post_') {
-                        $fullpath = $dir . '/' . $file;
-                        require_once($fullpath);
-                        $className = ucfirst(substr($file, 5, strlen($file) - 9));
-                        $hook = new $className;
-                        $hook->doHook($post);
+        if (!Updater::$dev_site) {
+            $dir = self::$source_path . '/hooks';
+            if (is_dir($dir)) {
+                if ( ($dh = opendir($dir)) ) {
+                    while ( ($file = readdir($dh) ) !== false) {
+                        if ($file[0] == '.') continue;
+                        if (substr($file, 0, 5) == 'post_') {
+                            $fullpath = $dir . '/' . $file;
+                            require_once($fullpath);
+                            $className = ucfirst(substr($file, 5, strlen($file) - 9));
+                            $hook = new $className;
+                            $hook->doHook($post);
+                        }
                     }
+                    closedir($dh);
                 }
-                closedir($dh);
             }
         }
     }
