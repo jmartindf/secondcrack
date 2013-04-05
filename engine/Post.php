@@ -21,6 +21,7 @@ class Post
     public static $track_google = false;
     public static $track_mint = false;
     public static $draft_publish_now = false;
+    public static $permalink = "/%year%/%month%/%day%/%slug";
     
     public $source_filename = '';
     public $title = '';
@@ -208,20 +209,20 @@ class Post
         foreach ($this->categories as $category) { $categories[$category] = array('post-category' => $category); }
         foreach ($this->tags as $tag) { $tags[$tag] = array('post-tag' => $tag); }
 
-        if(!Post::$category_permalinks) {        
-            // Convert relative image references to absolute so index pages work
-            $base_uri = '/' . $this->year . '/' . str_pad($this->month, 2, '0', STR_PAD_LEFT) . '/' . str_pad($this->day, 2, '0', STR_PAD_LEFT);
-        } else {
-            reset($categories);
-            $base_uri = "/" . key($categories);
-            if(array_key_exists($base_uri, Post::$child_categories)) {
-                $base_uri = "/" . Post::$child_categories[$base_uri] . "/" . $base_uri;
-            }
-            // if($base_uri=="") {
-            //     $base_uri = Post::$default_category;
-            // }
-            $base_uri = strtolower($base_uri);
+        $year = $this->year;
+        $month = str_pad($this->month, 2, '0', STR_PAD_LEFT);
+        $day = str_pad($this->day, 2, '0', STR_PAD_LEFT);
+
+        reset($categories);
+        $catstr = key($categories);
+        if(array_key_exists($catstr, Post::$child_categories)) {
+            $catstr = Post::$child_categories[$catstr] . "/" . $catstr;
         }
+        $catstr = strtolower($catstr);
+
+        $search = array("%year%", "%month%", "%day%", "%category%", "%slug%");
+        $replace = array($year, $month, $day, $catstr, $this->slug);
+        $base_uri = str_replace($search,$replace,Post::$permalink);
 
         return array_merge(
             $this->headers,
@@ -234,10 +235,10 @@ class Post
                 'post-tags' => $tags,
                 'post-categories' => $categories,
                 'post-type' => $this->type,
-                'post-permalink' => $base_uri . '/' . $this->slug,
-                'post-permalink-or-link' => isset($this->headers['link']) && $this->headers['link'] ? $this->headers['link'] : $base_uri . '/' . $this->slug,
-                'post-absolute-permalink' => rtrim(self::$blog_url, '/') . $base_uri . '/' . $this->slug,
-                'post-absolute-permalink-or-link' => rtrim(self::$blog_url, '/') . (isset($this->headers['link']) && $this->headers['link'] ? $this->headers['link'] : $base_uri . '/' . $this->slug),
+                'post-permalink' => $base_uri,
+                'post-permalink-or-link' => isset($this->headers['link']) && $this->headers['link'] ? $this->headers['link'] : $base_uri,
+                'post-absolute-permalink' => rtrim(self::$blog_url, '/') . $base_uri,
+                'post-absolute-permalink-or-link' => rtrim(self::$blog_url, '/') . (isset($this->headers['link']) && $this->headers['link'] ? $this->headers['link'] : $base_uri),
 
                 'post-is-first-on-date' => $this->is_first_post_on_this_date ? 'yes' : '',
                 'author' => $this->author,
