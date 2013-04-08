@@ -205,6 +205,7 @@ class Post
     public function array_for_template()
     {
         $tags = array();
+        $categories = array();
 
         foreach ($this->categories as $category) { $categories[$category] = array('post-category' => $category); }
         foreach ($this->tags as $tag) { $tags[$tag] = array('post-tag' => $tag); }
