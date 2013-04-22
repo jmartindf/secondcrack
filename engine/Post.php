@@ -21,6 +21,8 @@ class Post
     public static $track_google = false;
     public static $track_mint = false;
     public static $draft_publish_now = false;
+    public static $hub_urls = array();
+    public static $feed_urls = array();
     
     public $source_filename = '';
     public $title = '';
