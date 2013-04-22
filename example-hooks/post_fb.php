@@ -29,16 +29,15 @@ require_once(dirname(__FILE__) . '/facebook-php-sdk/src/facebook.php');
 
 class FacebookCredentials
 {
-    public static $app_id       = 'YOUR APP ID';
-    public static $app_secret   = 'YOUR APP SECRET';
-    public static $access_token = 'YOUR ACCESS TOKEN';
+    public static $app_id       = '';
+    public static $app_secret   = '';
+    public static $access_token = '';
+    public static $page_id      = '';
 }
 
-function construct_post_text(array $post)
+function construct_post_title(array $post)
 {
     $post_txt = $post['post-title'];
-    $post_url = $post['post-absolute-permalink'];
-	$post_txt .= ' - ' . $post_url;
 	    
     if (isset($post['link'])) $post_txt = "\xE2\x86\x92 " . $post_txt;
     return $post_txt;
@@ -46,7 +45,7 @@ function construct_post_text(array $post)
 
 function post_facebook_link_to_post(array $post)
 {
-    $post_text = construct_post_text($post);
+    $post_text = construct_post_title($post);
     
     $facebook = new Facebook(array(
         'appId' => FacebookCredentials::$app_id,
@@ -54,17 +53,21 @@ function post_facebook_link_to_post(array $post)
         'cookie' => true));
     
     $req =  array(
+        'link' => $post['post-absolute-permalink'],
         'access_token' => FacebookCredentials::$access_token,
-        'message' => $post_text);
+        'name' => $post_text,
+        'message' => $post['excerpt']);
     
-    $res = $facebook->api('/me/feed', 'POST', $req);
+    $res = $facebook->api('/'.FacebookCredentials::$page_id.'/feed', 'POST', $req);
 }
 
 class fb extends Hook
 {
     public function doHook(Post $post)
     {
-        post_facebook_link_to_post($post->array_for_template());
+        $content = $post->array_for_template();
+        post_facebook_link_to_post($content);
+        error_log("Posted to Facebook: [{$content['post-title']}]");
     }
 }
 ?>
