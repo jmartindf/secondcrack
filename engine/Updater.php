@@ -8,7 +8,9 @@ class Updater
 {
     public static $source_path;
     public static $dest_path;
+    public static $rebuild_path;
     public static $cache_path;
+    public static $rebuild_cache;
     public static $post_extension = '.md';
     
     // This option writes each draft preview into (web root)/drafts/whatever-slug
