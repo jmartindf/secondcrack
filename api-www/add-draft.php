@@ -33,6 +33,10 @@ if (!$auth) {
 <label for="fUserName">User:</label><input type="text" id="fUserName" name="username" size="20" /><br />
 <label for="fPassword">Password:</label><input type="password" id="fPassword" name="password" size="20" /><br />
 <input type="submit" value="Login" />
+<input type="hidden" name="u" value="<?php echo htmlentities($_REQUEST['u']); ?>" />
+<input type="hidden" name="t" value="<?php echo htmlentities($_REQUEST['t']); ?>" />
+<input type="hidden" name="s" value="<?php echo htmlentities($_REQUEST['s']); ?>" />
+<input type="hidden" name="is-link" value="<?php echo htmlentities($_REQUEST['is-link']); ?>" />
 </form>
 <?php
 } else {
@@ -43,7 +47,7 @@ EOF;
 
 $bookmarklet_code = str_replace('TARGET', (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . '/', trim($bookmarklet_code));
 
-if (! isset($_GET['u'])) {
+if (! isset($_REQUEST['u'])) {
     ?>
     <p>
         <a href="javascript:<?= rawurlencode(str_replace('EXTRA', 'is-link=1', $bookmarklet_code)) ?>">Draft Link</a> &bull;
@@ -62,10 +66,10 @@ if (! isset($_GET['u'])) {
     exit;
 }
 
-$url = substring_before(normalize_space($_GET['u']), ' ');
-$title = normalize_space($_GET['t']);
-$selection = trim($_GET['s']);
-$is_link = isset($_GET['is-link']) && intval($_GET['is-link']);
+$url = substring_before(normalize_space($_REQUEST['u']), ' ');
+$title = normalize_space($_REQUEST['t']);
+$selection = trim($_REQUEST['s']);
+$is_link = isset($_REQUEST['is-link']) && intval($_REQUEST['is-link']);
 $slug = trim(preg_replace('/[^a-z0-9-]+/ms', '-', strtolower(summarize($title, 60))), '-');
 if (! $slug) $slug = 'draft';
 
