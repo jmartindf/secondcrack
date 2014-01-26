@@ -66,9 +66,26 @@ if (! isset($_REQUEST['u'])) {
     exit;
 }
 
+include 'pinboard-api.php';
+$pb = new PinboardAPI(Updater::$pb_user, Updater::$pb_pass);
+
 $url = substring_before(normalize_space($_REQUEST['u']), ' ');
 $title = normalize_space($_REQUEST['t']);
 $selection = trim($_REQUEST['s']);
+
+$bookmarks = $pb->search_by_url($url);
+if (count($bookmarks)) {
+  $bookmark = $bookmarks[0];
+} else {
+  $bookmark = new PinboardBookmark;
+  $bookmark->url = $url;
+}
+
+array_push($bookmark->tags, 'toblog', 'blogdraft');
+$bookmark->title = $title;
+$bookmark->description = $selection;
+$bookmark->save();
+
 $is_link = isset($_REQUEST['is-link']) && intval($_REQUEST['is-link']);
 $slug = trim(preg_replace('/[^a-z0-9-]+/ms', '-', strtolower(summarize($title, 60))), '-');
 if (! $slug) $slug = 'draft';

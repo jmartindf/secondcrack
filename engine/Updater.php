@@ -47,6 +47,9 @@ class Updater
     public static $api_blog_password = '';
     public static $dev_site = false;
 
+    public static $pb_user = '';
+    public static $pb_pass = '';
+
     public static $changes_were_written = false;
     
     private static $index_to_be_updated = false;
