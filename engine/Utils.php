@@ -199,7 +199,7 @@ function safe_unlink($file)
 }
 
 function create_excerpt($content) {
-    $content = SmartyPants(Markdown::defaultTransform($content));
+    $content = SmartyPants(MarkdownExtra::defaultTransform($content));
 
     // ----- remove HTML TAGs ----- 
     $content = preg_replace ('/<[^>]*>/', ' ', $content); 

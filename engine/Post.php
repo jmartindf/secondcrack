@@ -1,7 +1,11 @@
 <?php
+spl_autoload_register(function($class){
+	require preg_replace('{\\\\|_(?!.*\\\\)}', DIRECTORY_SEPARATOR, ltrim($class, '\\')).'.php';
+});
 
 $fdir = dirname(__FILE__);
-require_once($fdir . 'Michelf/MarkdownExtra.inc.php');
+use \Michelf\MarkdownExtra;
+require_once($fdir . '/Michelf/MarkdownExtra.inc.php');
 require_once($fdir . '/PHPSmartyPants/smartypants.php');
 require_once($fdir . '/Updater.php');
 require_once($fdir . '/Template.php');
@@ -234,7 +238,7 @@ class Post
                 'post-slug' => $this->slug,
                 'post-timestamp' => $this->timestamp,
                 'post-rss-date' => date('D, d M Y H:i:s T', $this->timestamp),
-                'post-body' => SmartyPants(Markdown::defaultTransform($this->body)),
+                'post-body' => SmartyPants(MarkdownExtra::defaultTransform($this->body)),
                 'post-tags' => $tags,
                 'post-categories' => $categories,
                 'post-type' => $this->type,
