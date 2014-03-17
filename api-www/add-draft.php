@@ -106,7 +106,7 @@ $draft_contents =
     $body
 ;
 
-$output_path = Updater::$source_path . '/drafts';
+$output_path = Updater::$source_path . '/drafts' . ($is_link ? "/links" : '');
 if (! file_exists($output_path)) die("Drafts path doesn't exist: [$output_path]");
 if (! is_writable($output_path)) die("Drafts path isn't writable: [$output_path]");
 
@@ -114,21 +114,30 @@ $output_filename = $output_path . '/' . $slug . Updater::$post_extension;
 if (! file_put_contents($output_filename, $draft_contents)) die('File write failed');
 if (! chmod($output_filename, 0666)) die('File permission-set failed');
 
+$dropbox_path = "/home/secondcrack/Dropbox/secondcrack/";
+$relative_path = str_replace($dropbox_path, '', $output_filename);
+$editorial_path = sprintf("editorial://open/%s?root=dropbox",$relative_path);
+$mac_path = sprintf("file:///Users/jmartin/Dropbox/secondcrack/%s",$relative_path);
+$windows_path = sprintf("file://C:/Users/jmartin/Dropbox/secondcrack/%s",$relative_path);
+
 // header('Content-Type: text/plain; charset=utf-8');
 // echo "Saving to [$output_filename]:\n-----------------------\n$draft_contents\n------------------------\n";
 
 ?>
 <html>
     <head>
-        <meta http-equiv="Refresh" content="1;url=<?= h($url) ?>">
+        <meta http-equiv="Refresh" content="30;url=<?= h($url) ?>">
         <meta name="viewport" content="width=320"/>
         <title>Saved draft</title>
     </head>
     <body style="font: Normal 26px 'Lucida Grande', Verdana, sans-serif; text-align:center; color:#888; margin-top:100px;">
-        Saved.
-        <br/>
-        <br/>
-        <a href="<?= h($url) ?>" style="font-size: 11px; color: #aaa;">redirecting back...</a>
+        <p>Saved.</p>
+        <ul>
+            <li><a href="<?php echo $editorial_path; ?>">Open in Editorial...</a></li>
+            <li><a href="<?php echo $mac_path; ?>">Open in Sublime Text (Mac)...</a></li>
+            <li><a href="<?php echo $windows_path; ?>">Open in Sublime Text (Windows)...</a></li>
+        </ul>
+        <p><a href="<?= h($url) ?>" style="font-size: 11px; color: #aaa;">redirecting back...</a></p>
     </body>
 </html>
 <?php
