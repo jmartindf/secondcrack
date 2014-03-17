@@ -259,7 +259,7 @@ class Post
         $t = new Template(Updater::$page_template);
         $t->content = array(
             'page-title' => html_entity_decode(SmartyPants($this->title), ENT_QUOTES, 'UTF-8'),
-            'page-body' => SmartyPants(Markdown($this->body)),
+            'page-body' => SmartyPants(MarkdownExtra::defaultTransform($this->body)),
             'blog-title' => html_entity_decode(SmartyPants(self::$blog_title), ENT_QUOTES, 'UTF-8'),
             'blog-url' => self::$blog_url,
             'blog-description' => html_entity_decode(SmartyPants(self::$blog_description), ENT_QUOTES, 'UTF-8'),
